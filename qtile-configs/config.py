@@ -106,6 +106,7 @@ _group_names = [
     "effects",
     "lfos",
     "mod-matrix",
+    "sequencer",
 ]
 
 groups = [Group(str(i)) for i in _group_names]

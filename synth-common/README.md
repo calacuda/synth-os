@@ -1,0 +1,1 @@
+comunication protocol defenitions
