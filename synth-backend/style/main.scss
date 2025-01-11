@@ -1,0 +1,44 @@
+body {
+	font-family: sans-serif;
+	text-align: center;
+  height: vh;
+  width: vw;
+}
+
+main {
+  height: 100%;
+  width: 100%;
+}
+
+p {
+  align-content: center
+
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  vertical-align: bottom;
+  justify-content: center;
+  /* height: 100%; */
+  width: 100%;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  vertical-align: bottom;
+  justify-content: center;
+  height: 100%;
+  width: 15%;
+}
+
+input[type=range].vert-slider {
+  writing-mode: vertical-rl;
+  direction: ltr;
+  width: 32px;
+  vertical-align: bottom;
+  justify-content: center;
+  height: 82.5%;
+  width: 100%;
+}

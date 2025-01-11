@@ -1,0 +1,55 @@
+use super::ApiPage;
+use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
+use codee::string::FromToStringCodec;
+use leptos::prelude::*;
+use leptos_use::{use_event_source, UseEventSourceReturn};
+use stepper_synth_backend::pygame_coms::{SynthEngineState, SynthEngineType};
+
+pub mod organ;
+
+struct SynthScreen;
+
+impl ApiPage for SynthScreen {
+    fn show(b64_state: ReadSignal<String>) -> impl IntoView {
+        let synth_state = move || -> SynthEngineState {
+            bincode::deserialize(
+                &BASE64_STANDARD_NO_PAD
+                    .decode(b64_state.get().as_bytes())
+                    .unwrap(),
+            )
+            .unwrap()
+        };
+
+        // let display_state = move || format!("{}", synth_state().engine);
+
+        view! {
+            { move ||
+                match synth_state().engine {
+                    SynthEngineType::B3Organ => view! { <organ::OrganDisplay get_state=synth_state/> }.into_any(),
+                    SynthEngineType::SubSynth => view! { <UnderConstruction/> }.into_any(),
+                    SynthEngineType::Wurlitzer => view! { <UnderConstruction/> }.into_any(),
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn UnderConstruction() -> impl IntoView {
+    view! {
+        <p> "its a fookin synth bro..." </p>
+        <div> "under construction check back later" </div>
+    }
+}
+
+#[component]
+pub fn SynthPage() -> impl IntoView {
+    let UseEventSourceReturn { data, .. } =
+        use_event_source::<String, FromToStringCodec>("http://127.0.0.1:3000/synth-state/engine");
+
+    view! {
+        {
+            SynthScreen::display(data)
+        }
+    }
+}

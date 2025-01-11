@@ -1,0 +1,5 @@
+default:
+  @just -l
+
+http-sock:
+  echo "GET / HTTP/1.0\n" | nc -U /tmp/synth/backend.sock
