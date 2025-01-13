@@ -39,13 +39,13 @@ pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
 
     let draw_bars: Vec<_> = knobs.into_iter().enumerate().map(move |(i, knob)| {
                     view! {
-                        <div class="flex-row">
+                        // <div>
                             <p> {format!("{}", i + 1)} </p>
                             <div class="flex-col">
                                 <input class="vert-slider" type="range" min=0 max=8 step=1 prop:value=move || knob.0.get() on:input=draw_bar_change(i)/>
                                 <p> { move || knob.0.get() } </p>
                             </div>
-                        </div>
+                        // </div>
                     }
                 }).collect();
 

@@ -6,6 +6,8 @@ use leptos_use::{use_event_source, UseEventSourceReturn};
 use stepper_synth_backend::pygame_coms::{SynthEngineState, SynthEngineType};
 
 pub mod organ;
+pub mod sub_synth;
+pub mod wurlitzer;
 
 struct SynthScreen;
 
@@ -26,8 +28,8 @@ impl ApiPage for SynthScreen {
             { move ||
                 match synth_state().engine {
                     SynthEngineType::B3Organ => view! { <organ::OrganDisplay get_state=synth_state/> }.into_any(),
-                    SynthEngineType::SubSynth => view! { <UnderConstruction/> }.into_any(),
-                    SynthEngineType::Wurlitzer => view! { <UnderConstruction/> }.into_any(),
+                    SynthEngineType::SubSynth => view! { <sub_synth::SubSynthDisplay get_state=synth_state/> }.into_any(),
+                    SynthEngineType::Wurlitzer => view! { <wurlitzer::WurlitzerDisplay get_state=synth_state/> }.into_any(),
                 }
             }
         }
@@ -37,7 +39,7 @@ impl ApiPage for SynthScreen {
 #[component]
 pub fn UnderConstruction() -> impl IntoView {
     view! {
-        <p> "its a fookin synth bro..." </p>
+        <p> "its a synth bro..." </p>
         <div> "under construction check back later" </div>
     }
 }

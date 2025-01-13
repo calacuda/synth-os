@@ -8,6 +8,9 @@ mod consts {
 }
 
 #[cfg(feature = "ssr")]
+mod synth_helpers;
+
+#[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     use actix_files::Files;
@@ -17,10 +20,21 @@ async fn main() -> std::io::Result<()> {
     use leptos::prelude::*;
     use leptos_actix::{generate_route_list, LeptosRoutes};
     use leptos_meta::MetaTags;
-    use std::{fs::create_dir, path::PathBuf};
-    use stepper_synth_backend::pygame_coms::StepperSynth;
+    use log::*;
+    use std::{
+        fs::create_dir,
+        path::PathBuf,
+        sync::{atomic::AtomicBool, Arc, Mutex},
+        usize,
+    };
+    use stepper_synth_backend::SampleGen;
+    use stepper_synth_backend::{
+        pygame_coms::SynthEngineType, sequencer::SequencerIntake, synth_engines::Synth, SAMPLE_RATE,
+    };
     use synth_backend::app::*;
-    use tokio::sync::Mutex;
+    use synth_helpers::run_midi;
+    use tinyaudio::{run_output_device, OutputDeviceParameters};
+    use tokio::task::spawn;
 
     let conf = get_configuration(None).unwrap();
     let addr = conf.leptos_options.site_addr;
@@ -31,7 +45,43 @@ async fn main() -> std::io::Result<()> {
         _ = create_dir(socket_parent);
     }
 
-    let synth = web::Data::new(Mutex::new(StepperSynth::new()));
+    // TODO: enable midi routing
+    // TODO: enable midi sequencer
+    // TODO: enable audio output
+    let seq = web::Data::new(Mutex::new(SequencerIntake::new()));
+    let synth = web::Data::new(std::sync::Mutex::new(Synth::new()));
+    synth.lock().unwrap().set_engine(SynthEngineType::SubSynth);
+    let exit: Arc<AtomicBool> = Arc::new(false.into());
+
+    let _jh = {
+        let seq = seq.clone();
+        let synth = synth.clone();
+
+        spawn(async move { run_midi(seq, synth, exit).await });
+    };
+    let params = OutputDeviceParameters {
+        channels_count: 1,
+        sample_rate: SAMPLE_RATE as usize,
+        // channel_sample_count: 2048,
+        channel_sample_count: 1024,
+    };
+    let device = run_output_device(params, {
+        let synth = synth.clone();
+
+        move |data| {
+            for samples in data.chunks_mut(params.channels_count) {
+                let value = synth.lock().unwrap().get_sample();
+
+                for sample in samples {
+                    *sample = value;
+                }
+            }
+        }
+    });
+
+    if let Err(e) = device {
+        error!("strating audio playback caused error: {e}");
+    }
 
     HttpServer::new(move || {
         // Generate the list of routes in your Leptos App
@@ -54,6 +104,7 @@ async fn main() -> std::io::Result<()> {
             .service(synth_engine_state)
             .service(set_synth_engine)
             .service(set_organ_draw_bars)
+            .service(set_wurli_trem)
             // .route("/synth-state", web::get().to(synth_state))
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
@@ -78,6 +129,7 @@ async fn main() -> std::io::Result<()> {
             })
             .app_data(web::Data::new(leptos_options.to_owned()))
             .app_data(synth.clone())
+            .app_data(seq.clone())
         //.wrap(middleware::Compress::default())
     })
         .workers(6)
@@ -102,12 +154,10 @@ async fn favicon(
 #[cfg(feature = "ssr")]
 #[actix_web::get("/synth-state/engine/set/{engine}")]
 pub async fn set_synth_engine(
-    synth: actix_web::web::Data<
-        tokio::sync::Mutex<stepper_synth_backend::pygame_coms::StepperSynth>,
-    >,
+    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
     engine: actix_web::web::Path<stepper_synth_backend::pygame_coms::SynthEngineType>,
 ) -> impl actix_web::Responder {
-    synth.lock().await.set_engine(engine.into_inner());
+    synth.lock().unwrap().set_engine(engine.into_inner());
 
     String::new()
 }
@@ -115,9 +165,7 @@ pub async fn set_synth_engine(
 #[cfg(feature = "ssr")]
 #[actix_web::get("/synth-state/engine/set/organ/draw-bar/{db}/{set_to}")]
 pub async fn set_organ_draw_bars(
-    synth: actix_web::web::Data<
-        tokio::sync::Mutex<stepper_synth_backend::pygame_coms::StepperSynth>,
-    >,
+    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
     data: actix_web::web::Path<(usize, f32)>,
 ) -> impl actix_web::Responder {
     use std::ops::IndexMut;
@@ -133,12 +181,9 @@ pub async fn set_organ_draw_bars(
             .to_string();
     }
 
-    let synth = synth.lock().await;
-    let mut seq = synth.midi_sequencer.lock().unwrap();
-    let organ = seq
-        .synth
-        .engines
-        .index_mut(SynthEngineType::B3Organ as usize);
+    let mut synth = synth.lock().unwrap();
+    // let mut seq = synth.midi_sequencer.lock().unwrap();
+    let organ = synth.engines.index_mut(SynthEngineType::B3Organ as usize);
 
     let mut f_s: Vec<Box<dyn FnMut(&mut SynthModule) -> bool>> = vec![
         Box::new(|organ| organ.knob_1(to)),
@@ -156,17 +201,41 @@ pub async fn set_organ_draw_bars(
 }
 
 #[cfg(feature = "ssr")]
+#[actix_web::get("/synth-state/engine/set/wurlitzer/trem/{set_to}")]
+pub async fn set_wurli_trem(
+    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+    data: actix_web::web::Path<f32>,
+) -> impl actix_web::Responder {
+    use std::ops::IndexMut;
+    use stepper_synth_backend::{pygame_coms::SynthEngineType, KnobCtrl};
+
+    let set_to = data.into_inner();
+
+    if set_to > 1.0 {
+        return "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
+            .to_string();
+    }
+
+    let mut synth = synth.lock().unwrap();
+    // let mut seq = synth.midi_sequencer.lock().unwrap();
+    let wurli = synth.engines.index_mut(SynthEngineType::Wurlitzer as usize);
+
+    wurli.knob_1(set_to);
+
+    String::new()
+}
+
+#[cfg(feature = "ssr")]
 #[actix_web::get("/synth-state/engine")]
 pub async fn synth_engine_state(
     // req: actix_web::HttpRequest,
     // stream: actix_web::web::Payload,
-    synth: actix_web::web::Data<
-        tokio::sync::Mutex<stepper_synth_backend::pygame_coms::StepperSynth>,
-    >,
+    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
 ) -> impl actix_web::Responder {
     use actix_web_lab::sse;
     use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
     use std::time::Duration;
+    use stepper_synth_backend::{pygame_coms::SynthEngineState, synth_engines::SynthEngine};
 
     let (sender, receiver) = tokio::sync::mpsc::channel(1);
 
@@ -176,8 +245,17 @@ pub async fn synth_engine_state(
 
         async move || {
             let state = {
-                let state = synth.lock().await.get_engine_state();
-                state
+                // let state = synth.lock().await.get_engine_state();
+                // state
+                let mut synth = synth.lock().unwrap();
+
+                SynthEngineState {
+                    engine: synth.engine_type,
+                    effect: synth.effect_type,
+                    effect_on: synth.effect_power,
+                    knob_params: synth.get_engine().get_params(),
+                    gui_params: synth.get_engine().get_gui_params(),
+                }
             };
 
             if let Ok(msg) = bincode::serialize(&state) {

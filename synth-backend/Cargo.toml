@@ -27,6 +27,11 @@ base64 = "0.22.1"
 leptos-use = "0.15.3"
 codee = "0.2.0"
 reqwest = "0.12.12"
+midir = "0.10.1"
+midi-control = "0.2.2"
+tinyaudio = "1.1.0"
+anyhow = "1.0.95"
+log = { version = "0.4.22", features = ["max_level_info", "release_max_level_info"] }
 # leptos_server_signal = { git = "https://github.com/tqwewe/leptos_server_signal", version = "0.8.0" }
 
 [features]
