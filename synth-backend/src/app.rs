@@ -24,15 +24,13 @@ pub trait ApiPage: 'static {
                 fallback=|| Self::loading_screen()
                     // let loading = || page.loading_screen();
             >
-                { move || {
-                    data.get().map(|dat| set_b64.set(dat));
+                {
+                    move || {
+                        data.get().map(|dat| set_b64.set(dat));
 
-                    Self::show(b64_data)
-                    // match data.get() {
-                        // Some(b64_state) => Self::show(b64_state),
-                        // None => Self::loading_screen()
-                    // }
-                }}
+                        Self::show(b64_data)
+                    }
+                }
             </Show>
         }
     }
@@ -59,6 +57,8 @@ pub fn App() -> impl IntoView {
                     <Route path=StaticSegment("") view=HomePage/>
                     <Route path=StaticSegment("synths") view=screens::SynthPage/>
                     <Route path=StaticSegment("synth") view=screens::SynthPage/>
+                    <Route path=StaticSegment("effects") view=screens::EffectPage/>
+                    <Route path=StaticSegment("effect") view=screens::EffectPage/>
                     <Route path=WildcardSegment("any") view=NotFound/>
                 </Routes>
             </main>

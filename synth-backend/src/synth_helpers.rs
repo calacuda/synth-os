@@ -1,7 +1,7 @@
 // use actix_web::rt::spawn;
 use anyhow::{bail, Result};
 use log::*;
-use midi_control::{Channel, ControlEvent, KeyEvent, MidiMessage};
+use midi_control::{Channel, MidiMessage};
 use midir::{os::unix::VirtualOutput, Ignore, MidiInput, MidiOutput, PortInfoError};
 use std::sync::{
     atomic::{AtomicBool, Ordering},
@@ -62,7 +62,7 @@ pub async fn run_midi(
             // let effect = effect_midi.clone();
             let seq = seq.clone();
             let wurli = wurli.clone();
-            let name = port_name.clone();
+            // let name = port_name.clone();
 
             registered_ports.insert(
                 port_name,
@@ -71,14 +71,10 @@ pub async fn run_midi(
                     "midir-read-input",
                     move |_stamp, msg, _| {
                         let message = MidiMessage::from(msg);
-                        // let seq = seq.clone();
-                        // let synth = synth.clone();
                         let wurli_focused =
                             synth.lock().unwrap().engine_type == SynthEngineType::Wurlitzer;
-                        // spawn_local(async move {
-                        //     // do midi stuff
+
                         match message {
-                            // MidiMessage::Invalid => {}
                             MidiMessage::NoteOn(channel, _)
                             | MidiMessage::NoteOff(channel, _)
                             | MidiMessage::PitchBend(channel, _, _)
@@ -92,18 +88,12 @@ pub async fn run_midi(
                                 synth.lock().unwrap().midi_input(&message);
                             }
                         }
-                        //     // synth.lock().await.(&message);
-                        // });
-                        // TODO: conditionally send midi to wurlitzer controller instead.
-                        // synth.lock().unwrap().midi_input(&message);
 
-                        // spawn(async move {
                         let mut seq = seq.lock().unwrap();
 
                         if seq.state.recording {
                             seq.midi_input(&message);
                         }
-                        // });
                     },
                     (),
                 ),

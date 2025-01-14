@@ -12,7 +12,6 @@ main {
 
 p {
   align-content: center
-
 }
 
 .flex-row {
@@ -41,4 +40,17 @@ input[type=range].vert-slider {
   justify-content: center;
   height: 82.5%;
   width: 100%;
+}
+
+input[type=range].horizontal-slider {
+  /* writing-mode: vertical-rl; */
+  /* direction: ltr; */
+  /* height: 32px; */
+  /* vertical-align: center; */
+  /* justify-content: center; */
+  /* writing-mode: horizontal-lr; */
+  direction: ltr;
+  align-content: stretch;
+  height: 100%;
+  width: 82.5%;
 }

@@ -21,10 +21,17 @@ pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
 
     let send_db = move |db: usize, set_to: f32| {
         spawn_local(async move {
-            _ = reqwest::get(format!(
-                "http://127.0.0.1:3000/synth-state/engine/set/organ/draw-bar/{db}/{set_to}"
-            ))
-            .await;
+            let send = move || {
+                reqwest::get(format!(
+                    "http://127.0.0.1:3000/synth-state/engine/set/organ/draw-bar/{db}/{set_to}"
+                ))
+            };
+
+            for _ in 0..8 {
+                if send().await.is_ok() {
+                    break;
+                }
+            }
         });
     };
 

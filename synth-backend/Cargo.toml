@@ -32,6 +32,7 @@ midi-control = "0.2.2"
 tinyaudio = "1.1.0"
 anyhow = "1.0.95"
 log = { version = "0.4.22", features = ["max_level_info", "release_max_level_info"] }
+serde = { version = "1.0.217", features = ["derive"] }
 # leptos_server_signal = { git = "https://github.com/tqwewe/leptos_server_signal", version = "0.8.0" }
 
 [features]

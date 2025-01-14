@@ -5,3 +5,4 @@
 - lfos
 - mod-matrix
 - sequencer
+- cli command client
