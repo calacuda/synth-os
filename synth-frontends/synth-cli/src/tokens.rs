@@ -1,6 +1,5 @@
-use std::{fmt::Display, os, str::FromStr, task::Wake};
-
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 use strum::{Display, EnumIter, IntoEnumIterator};
 
 use crate::{CanEnumIter, CmdToken};
@@ -95,10 +94,19 @@ impl CmdToken for Gui {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Display)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum GenericParam {
     Knob(Knob),
     Gui(Gui),
+}
+
+impl Display for GenericParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Self::Knob(knob) => write!(f, "{}", knob.get_one_desc()),
+            Self::Gui(gui) => write!(f, "{}", gui.get_one_desc()),
+        }
+    }
 }
 
 impl CmdToken for GenericParam {
@@ -392,6 +400,7 @@ impl Default for NodeType<GenericParam> {
     }
 }
 
+// TODO: for the engine command, set which engine is being modified.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Nodes {
     Cmd(NodeType<MainCmd>),

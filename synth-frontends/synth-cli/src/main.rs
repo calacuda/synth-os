@@ -140,8 +140,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     )?;
     terminal.show_cursor()?;
 
-    if let Err(err) = res {
-        println!("{:?}", err)
+    match res {
+        Ok(Some(path)) => println!("{}", path.replace(" ", "/")),
+        Ok(None) => {
+            println!("QUIT")
+        }
+        Err(err) => {
+            println!("{:?}", err)
+        }
     }
 
     Ok(())
@@ -163,7 +169,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 //     println!("{:?}", app.get_tokens());
 // }
 
-fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
+fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<Option<String>> {
     loop {
         terminal.draw(|f| ui(f, &app))?;
 
@@ -174,11 +180,11 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<(
                     // app.history.push(cmd.clone());
 
                     if cmd.to_lowercase() == "quit" {
-                        break Ok(());
+                        break Ok(None);
                     } else {
                         // Send Command to backend over *unix-domain-socket*
 
-                        break Ok(());
+                        break Ok(Some(app.input.to_string()));
                     }
 
                     // app.input.reset();
@@ -239,14 +245,16 @@ fn ui(f: &mut Frame, app: &App) {
 
     // filter based on current token
     let tokens = app.get_tokens();
-    // println!("{tokens:?}");
 
     let messages: Vec<ListItem> = tokens
         .into_iter()
         .enumerate()
         .map(|(i, (token, desc))| {
             let content = vec![
-                Line::from(Span::raw(format!("{i}: {token}"))),
+                Line::from(Span::styled(
+                    format!("{i}: {token}"),
+                    Style::default().add_modifier(Modifier::BOLD),
+                )),
                 Line::from(Span::raw(format!("    {desc}"))),
             ];
             ListItem::new(content)
