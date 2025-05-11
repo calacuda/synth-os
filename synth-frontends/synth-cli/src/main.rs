@@ -18,36 +18,36 @@ use tui_input::backend::crossterm::EventHandler;
 
 pub mod tokens;
 
-pub type Cmd = Vec<Box<dyn CmdToken>>;
+// pub type Cmd = Vec<Box<dyn CmdToken>>;
 
-pub trait CanEnumIter: Clone {
-    fn into_vec() -> Vec<Self>;
-}
-
-impl<T> CanEnumIter for T
-where
-    T: IntoEnumIterator + Clone,
-{
-    fn into_vec() -> Vec<Self> {
-        Self::iter().collect()
-    }
-}
-
-pub trait CmdToken: std::fmt::Debug + Clone + CanEnumIter + Display {
-    // fn get_hildren() -> Vec<Self>;
-    fn get_desc() -> Vec<(String, String)> {
-        Self::into_vec()
-            .into_iter()
-            .map(|token| (format!("{token}"), token.get_one_desc()))
-            .collect()
-    }
-    fn get_one_desc(&self) -> String;
-
-    // fn match_str(against: &str) -> (Vec<(String, String)>, bool);
-    // /// semi-recursive function to add the string repr of self to,
-    // fn render(&self, cmd: &mut Vec<String>) -> Vec<String>;
-    // fn call(&self);
-}
+// pub trait CanEnumIter: Clone {
+//     fn into_vec() -> Vec<Self>;
+// }
+//
+// impl<T> CanEnumIter for T
+// where
+//     T: IntoEnumIterator + Clone,
+// {
+//     fn into_vec() -> Vec<Self> {
+//         Self::iter().collect()
+//     }
+// }
+//
+// pub trait CmdToken: std::fmt::Debug + Clone + CanEnumIter + Display {
+//     // fn get_hildren() -> Vec<Self>;
+//     fn get_desc() -> Vec<(String, String)> {
+//         Self::into_vec()
+//             .into_iter()
+//             .map(|token| (format!("{token}"), token.get_one_desc()))
+//             .collect()
+//     }
+//     fn get_one_desc(&self) -> String;
+//
+//     // fn match_str(against: &str) -> (Vec<(String, String)>, bool);
+//     // /// semi-recursive function to add the string repr of self to,
+//     // fn render(&self, cmd: &mut Vec<String>) -> Vec<String>;
+//     // fn call(&self);
+// }
 
 /// App holds the state of the application
 struct App {

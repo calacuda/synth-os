@@ -21,10 +21,8 @@ pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
 
     let send_db = move |db: usize, set_to: f32| {
         spawn_local(async move {
-            let send = move || {
-                reqwest::get(format!(
-                    "http://127.0.0.1:3000/synth-state/engine/set/organ/draw-bar/{db}/{set_to}"
-                ))
+            let send = move || { 
+                set_organ_draw_bars((db,set_to))
             };
 
             for _ in 0..8 {
@@ -62,4 +60,50 @@ pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
             { draw_bars }
         </div>
     }
+}
+
+#[leptos::server]
+pub async fn set_organ_draw_bars(
+    data: (usize, f32),
+) -> Result<(), leptos::prelude::ServerFnError> {
+    use std::ops::IndexMut;
+    use stepper_synth_backend::{
+        pygame_coms::SynthEngineType, synth_engines::SynthModule, KnobCtrl,
+    };
+
+    let synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>> =
+        leptos_actix::extract().await?;
+
+    let (db, set_to) = data;
+    let to = set_to;
+
+    if to > 1.0 {
+        return Err(ServerFnError::new(
+            "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
+        ));
+    }
+
+    if db > 8 {
+        return Err(ServerFnError::new(
+            "there are only 8 drawbars. no greater, no less.",
+        ));
+    }
+
+    let mut synth = synth.lock().unwrap();
+    // let mut seq = synth.midi_sequencer.lock().unwrap();
+    let organ = synth.engines.index_mut(SynthEngineType::B3Organ as usize);
+
+    let mut f_s: Vec<Box<dyn FnMut(&mut SynthModule) -> bool>> = vec![
+        Box::new(|organ| organ.knob_1(to)),
+        Box::new(|organ| organ.knob_2(to)),
+        Box::new(|organ| organ.knob_3(to)),
+        Box::new(|organ| organ.knob_4(to)),
+        Box::new(|organ| organ.knob_5(to)),
+        Box::new(|organ| organ.knob_6(to)),
+        Box::new(|organ| organ.knob_7(to)),
+        Box::new(|organ| organ.knob_8(to)),
+    ];
+    f_s[db](organ);
+
+    Ok(())
 }

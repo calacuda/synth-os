@@ -8,6 +8,7 @@ use stepper_synth_backend::{
     pygame_coms::{SynthEngineState, SynthEngineType},
 };
 
+pub mod channel_editor;
 pub mod organ;
 pub mod reverb;
 pub mod sub_synth;
@@ -34,6 +35,7 @@ impl ApiPage for SynthScreen {
                     SynthEngineType::B3Organ => view! { <organ::OrganDisplay get_state=synth_state/> }.into_any(),
                     SynthEngineType::SubSynth => view! { <sub_synth::SubSynthDisplay get_state=synth_state/> }.into_any(),
                     SynthEngineType::Wurlitzer => view! { <wurlitzer::WurlitzerDisplay get_state=synth_state/> }.into_any(),
+                    SynthEngineType::WaveTable => view! { <div> "TODO" </div> }.into_any(),
                 }
             }
         }
@@ -74,26 +76,27 @@ pub fn UnderConstruction() -> impl IntoView {
     }
 }
 
-#[component]
-pub fn SynthPage() -> impl IntoView {
-    let UseEventSourceReturn { data, .. } =
-        use_event_source::<String, FromToStringCodec>("http://127.0.0.1:3000/synth-state/engine");
-
-    view! {
-        {
-            SynthScreen::display(data)
-        }
-    }
-}
-
-#[component]
-pub fn EffectPage() -> impl IntoView {
-    let UseEventSourceReturn { data, .. } =
-        use_event_source::<String, FromToStringCodec>("http://127.0.0.1:3000/synth-state/effect");
-
-    view! {
-        {
-            EffectScreen::display(data)
-        }
-    }
-}
+// #[component]
+// pub fn SynthPage() -> impl IntoView {
+//     let UseEventSourceReturn { data, .. } =
+//         // use_event_source::<String, FromToStringCodec>("http://127.0.0.1:3000/synth-state/engine");
+//         use_event_source::<String, FromToStringCodec>("/synth-state/engine");
+//
+//     view! {
+//         {
+//             SynthScreen::display(data)
+//         }
+//     }
+// }
+//
+// #[component]
+// pub fn EffectPage() -> impl IntoView {
+//     let UseEventSourceReturn { data, .. } =
+//         use_event_source::<String, FromToStringCodec>("/synth-state/effect");
+//
+//     view! {
+//         {
+//             EffectScreen::display(data)
+//         }
+//     }
+// }

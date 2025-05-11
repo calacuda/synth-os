@@ -4,6 +4,7 @@ use leptos_router::{
     components::{Route, Router, Routes},
     StaticSegment, WildcardSegment,
 };
+use screens::channel_editor::ChannelEditor;
 
 mod screens;
 
@@ -48,17 +49,18 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/synth-backend.css"/>
 
         // sets the document title
-        <Title text="Welcome to Leptos"/>
+        <Title text="Net Synth"/>
 
         // content for this welcome page
         <Router>
             <main>
                 <Routes fallback=move || "Not found.">
-                    <Route path=StaticSegment("") view=HomePage/>
-                    <Route path=StaticSegment("synths") view=screens::SynthPage/>
-                    <Route path=StaticSegment("synth") view=screens::SynthPage/>
-                    <Route path=StaticSegment("effects") view=screens::EffectPage/>
-                    <Route path=StaticSegment("effect") view=screens::EffectPage/>
+                    // <Route path=StaticSegment("") view=HomePage/>
+                    <Route path=StaticSegment("edit") view=ChannelEditor/>
+                    // <Route path=StaticSegment("synths") view=screens::SynthPage/>
+                    // <Route path=StaticSegment("synth") view=screens::SynthPage/>
+                    // <Route path=StaticSegment("effects") view=screens::EffectPage/>
+                    // <Route path=StaticSegment("effect") view=screens::EffectPage/>
                     <Route path=WildcardSegment("any") view=NotFound/>
                 </Routes>
             </main>

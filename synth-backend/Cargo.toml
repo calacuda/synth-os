@@ -10,29 +10,29 @@ crate-type = ["cdylib", "rlib"]
 actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", optional = true, features = ["macros"] }
 console_error_panic_hook = "0.1"
-http = { version = "1.0.0", optional = true }
-leptos = { version = "0.7.0", features = ["nightly"] }
-leptos_meta = { version = "0.7.0" }
-leptos_actix = { version = "0.7.0", optional = true }
-leptos_router = { version = "0.7.0", features = ["nightly"] }
-wasm-bindgen = "=0.2.99"
+http = { version = "1.3.1", optional = true }
+leptos = { version = "0.7.8", features = ["nightly"] }
+leptos_meta = { version = "0.7.8" }
+leptos_actix = { version = "0.7.8", optional = true }
+leptos_router = { version = "0.7.8", features = ["nightly"] }
+wasm-bindgen = "0.2"
 stepper-synth-backend = { package = "stepper-synth" , git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, optional = true }
 # leptos_server_signal = "0.8.0"
 actix-ws = { version = "0.2", optional = true }
 leptos_sse = "0.4.0"
 actix-web-lab = { version = "0.23.0", optional = true }
-tokio = { version = "1.42.0", optional = true }
+tokio = { version = "1.44.2", optional = true }
 bincode = "1.3.3"
 base64 = "0.22.1"
-leptos-use = "0.15.3"
+leptos-use = "0.15.7"
 codee = "0.2.0"
-reqwest = "0.12.12"
+reqwest = "0.12.15"
 midir = "0.10.1"
 midi-control = "0.2.2"
 tinyaudio = "1.1.0"
-anyhow = "1.0.95"
-log = { version = "0.4.22", features = ["max_level_info", "release_max_level_info"] }
-serde = { version = "1.0.217", features = ["derive"] }
+anyhow = "1.0.97"
+log = { version = "0.4.27", features = ["max_level_info", "release_max_level_info"] }
+serde = { version = "1.0.219", features = ["derive"] }
 # leptos_server_signal = { git = "https://github.com/tqwewe/leptos_server_signal", version = "0.8.0" }
 
 [features]
@@ -83,7 +83,8 @@ style-file = "style/main.scss"
 # Optional. Env: LEPTOS_ASSETS_DIR.
 assets-dir = "assets"
 # The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
-site-addr = "127.0.0.1:3000"
+# site-addr = "127.0.0.1:3000"
+site-addr = "0.0.0.0:3000"
 # The port to use for automatic reload monitoring
 reload-port = 3001
 # [Optional] Command to use when running end2end tests. It will run in the end2end dir.

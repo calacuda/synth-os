@@ -1,4 +1,6 @@
 #![feature(impl_trait_in_bindings)]
+use leptos::prelude::{server, ServerFnError};
+use leptos_actix::extract;
 
 #[cfg(feature = "ssr")]
 mod consts {
@@ -76,7 +78,7 @@ async fn main() -> std::io::Result<()> {
     });
 
     if let Err(e) = device {
-        error!("strating audio playback caused error: {e}");
+        error!("starting audio playback caused error: {e}");
     }
 
     HttpServer::new(move || {
@@ -200,6 +202,54 @@ pub async fn set_organ_draw_bars(
 
     String::new()
 }
+
+// #[leptos::server]
+// pub async fn set_organ_draw_bars_sfn(
+//     data: (usize, f32),
+// ) -> Result<(), leptos::prelude::ServerFnError> {
+//     use std::ops::IndexMut;
+//     use stepper_synth_backend::{
+//         pygame_coms::SynthEngineType, synth_engines::SynthModule, KnobCtrl,
+//     };
+//
+//     let synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>> =
+//         extract().await?;
+//     // let data: actix_web::web::Path<(usize, f32)> = extract().await?;
+//
+//     let (db, set_to) = data;
+//     let to = set_to;
+//
+//     if to > 1.0 {
+//         return Err(ServerFnError::new(
+//             "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
+//                 .to_string(),
+//         ));
+//     }
+//
+//     if db > 8 {
+//         return Err(ServerFnError::new(
+//             "there are only 8 drawbars. no greater, no less.",
+//         ));
+//     }
+//
+//     let mut synth = synth.lock().unwrap();
+//     // let mut seq = synth.midi_sequencer.lock().unwrap();
+//     let organ = synth.engines.index_mut(SynthEngineType::B3Organ as usize);
+//
+//     let mut f_s: Vec<Box<dyn FnMut(&mut SynthModule) -> bool>> = vec![
+//         Box::new(|organ| organ.knob_1(to)),
+//         Box::new(|organ| organ.knob_2(to)),
+//         Box::new(|organ| organ.knob_3(to)),
+//         Box::new(|organ| organ.knob_4(to)),
+//         Box::new(|organ| organ.knob_5(to)),
+//         Box::new(|organ| organ.knob_6(to)),
+//         Box::new(|organ| organ.knob_7(to)),
+//         Box::new(|organ| organ.knob_8(to)),
+//     ];
+//     f_s[db](organ);
+//
+//     Ok(())
+// }
 
 #[cfg(feature = "ssr")]
 #[actix_web::get("/synth-state/engine/set/wurlitzer/trem/{set_to}")]
