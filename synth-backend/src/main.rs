@@ -96,14 +96,14 @@ async fn main() -> std::io::Result<()> {
             // serve the favicon from /favicon.ico
             .service(favicon)
             // .service(synth_state)
-            .service(synth_engine_state)
-            .service(synth_effect_state)
-            .service(set_synth_engine)
-            .service(set_organ_draw_bars)
-            .service(set_wurli_trem)
-            .service(set_reverb_params)
-            .service(set_effect)
-            .service(set_effect_power)
+            // .service(synth_engine_state)
+            // .service(synth_effect_state)
+            // .service(set_synth_engine)
+            // .service(set_organ_draw_bars)
+            // .service(set_wurli_trem)
+            // .service(set_reverb_params)
+            // .service(set_effect)
+            // .service(set_effect_power)
             // .route("/synth-state", web::get().to(synth_state))
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
@@ -149,59 +149,59 @@ async fn favicon(
         "{site_root}/favicon.ico"
     ))?)
 }
+//
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/engine/set/{engine}")]
+// pub async fn set_synth_engine(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+//     engine: actix_web::web::Path<stepper_synth_backend::pygame_coms::SynthEngineType>,
+// ) -> impl actix_web::Responder {
+//     synth.lock().unwrap().set_engine(engine.into_inner());
+//
+//     String::new()
+// }
 
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/engine/set/{engine}")]
-pub async fn set_synth_engine(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-    engine: actix_web::web::Path<stepper_synth_backend::pygame_coms::SynthEngineType>,
-) -> impl actix_web::Responder {
-    synth.lock().unwrap().set_engine(engine.into_inner());
-
-    String::new()
-}
-
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/engine/set/organ/draw-bar/{db}/{set_to}")]
-pub async fn set_organ_draw_bars(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-    data: actix_web::web::Path<(usize, f32)>,
-) -> impl actix_web::Responder {
-    use std::ops::IndexMut;
-    use stepper_synth_backend::{
-        pygame_coms::SynthEngineType, synth_engines::SynthModule, KnobCtrl,
-    };
-
-    let (db, set_to) = data.into_inner();
-    let to = set_to;
-
-    if to > 1.0 {
-        return "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
-            .to_string();
-    }
-
-    if db > 8 {
-        return "there are only 8 drawbars. no greater, no less.".to_string();
-    }
-
-    let mut synth = synth.lock().unwrap();
-    // let mut seq = synth.midi_sequencer.lock().unwrap();
-    let organ = synth.engines.index_mut(SynthEngineType::B3Organ as usize);
-
-    let mut f_s: Vec<Box<dyn FnMut(&mut SynthModule) -> bool>> = vec![
-        Box::new(|organ| organ.knob_1(to)),
-        Box::new(|organ| organ.knob_2(to)),
-        Box::new(|organ| organ.knob_3(to)),
-        Box::new(|organ| organ.knob_4(to)),
-        Box::new(|organ| organ.knob_5(to)),
-        Box::new(|organ| organ.knob_6(to)),
-        Box::new(|organ| organ.knob_7(to)),
-        Box::new(|organ| organ.knob_8(to)),
-    ];
-    f_s[db](organ);
-
-    String::new()
-}
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/engine/set/organ/draw-bar/{db}/{set_to}")]
+// pub async fn set_organ_draw_bars(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+//     data: actix_web::web::Path<(usize, f32)>,
+// ) -> impl actix_web::Responder {
+//     use std::ops::IndexMut;
+//     use stepper_synth_backend::{
+//         pygame_coms::SynthEngineType, synth_engines::SynthModule, KnobCtrl,
+//     };
+//
+//     let (db, set_to) = data.into_inner();
+//     let to = set_to;
+//
+//     if to > 1.0 {
+//         return "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
+//             .to_string();
+//     }
+//
+//     if db > 8 {
+//         return "there are only 8 drawbars. no greater, no less.".to_string();
+//     }
+//
+//     let mut synth = synth.lock().unwrap();
+//     // let mut seq = synth.midi_sequencer.lock().unwrap();
+//     let organ = synth.engines.index_mut(SynthEngineType::B3Organ as usize);
+//
+//     let mut f_s: Vec<Box<dyn FnMut(&mut SynthModule) -> bool>> = vec![
+//         Box::new(|organ| organ.knob_1(to)),
+//         Box::new(|organ| organ.knob_2(to)),
+//         Box::new(|organ| organ.knob_3(to)),
+//         Box::new(|organ| organ.knob_4(to)),
+//         Box::new(|organ| organ.knob_5(to)),
+//         Box::new(|organ| organ.knob_6(to)),
+//         Box::new(|organ| organ.knob_7(to)),
+//         Box::new(|organ| organ.knob_8(to)),
+//     ];
+//     f_s[db](organ);
+//
+//     String::new()
+// }
 
 // #[leptos::server]
 // pub async fn set_organ_draw_bars_sfn(
@@ -251,221 +251,221 @@ pub async fn set_organ_draw_bars(
 //     Ok(())
 // }
 
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/engine/set/wurlitzer/trem/{set_to}")]
-pub async fn set_wurli_trem(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-    data: actix_web::web::Path<f32>,
-) -> impl actix_web::Responder {
-    use std::ops::IndexMut;
-    use stepper_synth_backend::{pygame_coms::SynthEngineType, KnobCtrl};
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/engine/set/wurlitzer/trem/{set_to}")]
+// pub async fn set_wurli_trem(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+//     data: actix_web::web::Path<f32>,
+// ) -> impl actix_web::Responder {
+//     use std::ops::IndexMut;
+//     use stepper_synth_backend::{pygame_coms::SynthEngineType, KnobCtrl};
+//
+//     let set_to = data.into_inner();
+//
+//     if set_to > 1.0 {
+//         return "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
+//             .to_string();
+//     }
+//
+//     let mut synth = synth.lock().unwrap();
+//     let wurli = synth.engines.index_mut(SynthEngineType::Wurlitzer as usize);
+//
+//     wurli.knob_1(set_to);
+//
+//     String::new()
+// }
 
-    let set_to = data.into_inner();
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/effect/set/{effect}")]
+// pub async fn set_effect(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+//     data: actix_web::web::Path<stepper_synth_backend::effects::EffectType>,
+// ) -> impl actix_web::Responder {
+//     let effect = data.into_inner();
+//     let mut synth = synth.lock().unwrap();
+//
+//     synth.effect_type = effect;
+//
+//     String::new()
+// }
 
-    if set_to > 1.0 {
-        return "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
-            .to_string();
-    }
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/effect/{power}")]
+// pub async fn set_effect_power(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+//     data: actix_web::web::Path<synth_backend::PowerState>,
+// ) -> impl actix_web::Responder {
+//     use synth_backend::PowerState;
+//
+//     let power = data.into_inner();
+//     let mut synth = synth.lock().unwrap();
+//
+//     synth.effect_power = power == PowerState::On;
+//
+//     String::new()
+// }
 
-    let mut synth = synth.lock().unwrap();
-    let wurli = synth.engines.index_mut(SynthEngineType::Wurlitzer as usize);
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/effect/set/reverb/{param}/{set_to}")]
+// pub async fn set_reverb_params(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+//     data: actix_web::web::Path<(String, f32)>,
+// ) -> impl actix_web::Responder {
+//     use std::ops::IndexMut;
+//     use stepper_synth_backend::effects::{Effect, EffectType};
+//
+//     let (param, set_to) = data.into_inner();
+//
+//     if set_to > 1.0 {
+//         return "number must be between 0.0 and 1.0. no greater, no less.".to_string();
+//     }
+//
+//     let mut synth = synth.lock().unwrap();
+//     let reverb = synth.effects.index_mut(EffectType::Reverb as usize);
+//
+//     reverb.set_param(&param, set_to);
+//
+//     String::new()
+// }
 
-    wurli.knob_1(set_to);
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/engine")]
+// pub async fn synth_engine_state(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+// ) -> impl actix_web::Responder {
+//     use actix_web_lab::sse;
+//     use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
+//     use std::time::Duration;
+//     use stepper_synth_backend::{pygame_coms::SynthEngineState, synth_engines::SynthEngine};
+//
+//     let (sender, receiver) = tokio::sync::mpsc::channel(1);
+//
+//     let mut send_state = {
+//         let synth = synth.clone();
+//         let mut last_state = Vec::new();
+//
+//         async move || {
+//             let state = {
+//                 // let state = synth.lock().await.get_engine_state();
+//                 // state
+//                 let mut synth = synth.lock().unwrap();
+//
+//                 SynthEngineState {
+//                     engine: synth.engine_type,
+//                     effect: synth.effect_type,
+//                     effect_on: synth.effect_power,
+//                     knob_params: synth.get_engine().get_params(),
+//                     gui_params: synth.get_engine().get_gui_params(),
+//                 }
+//             };
+//
+//             if let Ok(msg) = bincode::serialize(&state) {
+//                 if last_state == msg {
+//                     return true;
+//                 }
+//                 last_state = msg.clone();
+//
+//                 let msg = sse::Data::new(BASE64_STANDARD_NO_PAD.encode(&msg));
+//
+//                 if sender.try_send(msg.into()).is_err() {
+//                     println!("client disconnected; could not send SSE message");
+//                     false
+//                 } else {
+//                     true
+//                 }
+//             } else {
+//                 true
+//             }
+//         }
+//     };
+//
+//     send_state().await;
+//
+//     actix_web::rt::spawn(async move {
+//         loop {
+//             actix_web::rt::time::sleep(Duration::from_millis(1000)).await;
+//
+//             let keep_going = send_state().await;
+//
+//             if !keep_going {
+//                 println!("stopping sse");
+//                 break;
+//             }
+//         }
+//
+//         println!("done");
+//     });
+//
+//     sse::Sse::from_infallible_receiver(receiver) // .with_keep_alive(Duration::from_secs(1))
+// }
 
-    String::new()
-}
-
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/effect/set/{effect}")]
-pub async fn set_effect(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-    data: actix_web::web::Path<stepper_synth_backend::effects::EffectType>,
-) -> impl actix_web::Responder {
-    let effect = data.into_inner();
-    let mut synth = synth.lock().unwrap();
-
-    synth.effect_type = effect;
-
-    String::new()
-}
-
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/effect/{power}")]
-pub async fn set_effect_power(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-    data: actix_web::web::Path<synth_backend::PowerState>,
-) -> impl actix_web::Responder {
-    use synth_backend::PowerState;
-
-    let power = data.into_inner();
-    let mut synth = synth.lock().unwrap();
-
-    synth.effect_power = power == PowerState::On;
-
-    String::new()
-}
-
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/effect/set/reverb/{param}/{set_to}")]
-pub async fn set_reverb_params(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-    data: actix_web::web::Path<(String, f32)>,
-) -> impl actix_web::Responder {
-    use std::ops::IndexMut;
-    use stepper_synth_backend::effects::{Effect, EffectType};
-
-    let (param, set_to) = data.into_inner();
-
-    if set_to > 1.0 {
-        return "number must be between 0.0 and 1.0. no greater, no less.".to_string();
-    }
-
-    let mut synth = synth.lock().unwrap();
-    let reverb = synth.effects.index_mut(EffectType::Reverb as usize);
-
-    reverb.set_param(&param, set_to);
-
-    String::new()
-}
-
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/engine")]
-pub async fn synth_engine_state(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-) -> impl actix_web::Responder {
-    use actix_web_lab::sse;
-    use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
-    use std::time::Duration;
-    use stepper_synth_backend::{pygame_coms::SynthEngineState, synth_engines::SynthEngine};
-
-    let (sender, receiver) = tokio::sync::mpsc::channel(1);
-
-    let mut send_state = {
-        let synth = synth.clone();
-        let mut last_state = Vec::new();
-
-        async move || {
-            let state = {
-                // let state = synth.lock().await.get_engine_state();
-                // state
-                let mut synth = synth.lock().unwrap();
-
-                SynthEngineState {
-                    engine: synth.engine_type,
-                    effect: synth.effect_type,
-                    effect_on: synth.effect_power,
-                    knob_params: synth.get_engine().get_params(),
-                    gui_params: synth.get_engine().get_gui_params(),
-                }
-            };
-
-            if let Ok(msg) = bincode::serialize(&state) {
-                if last_state == msg {
-                    return true;
-                }
-                last_state = msg.clone();
-
-                let msg = sse::Data::new(BASE64_STANDARD_NO_PAD.encode(&msg));
-
-                if sender.try_send(msg.into()).is_err() {
-                    println!("client disconnected; could not send SSE message");
-                    false
-                } else {
-                    true
-                }
-            } else {
-                true
-            }
-        }
-    };
-
-    send_state().await;
-
-    actix_web::rt::spawn(async move {
-        loop {
-            actix_web::rt::time::sleep(Duration::from_millis(1000)).await;
-
-            let keep_going = send_state().await;
-
-            if !keep_going {
-                println!("stopping sse");
-                break;
-            }
-        }
-
-        println!("done");
-    });
-
-    sse::Sse::from_infallible_receiver(receiver) // .with_keep_alive(Duration::from_secs(1))
-}
-
-#[cfg(feature = "ssr")]
-#[actix_web::get("/synth-state/effect")]
-pub async fn synth_effect_state(
-    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
-) -> impl actix_web::Responder {
-    use actix_web_lab::sse;
-    use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
-    use std::time::Duration;
-    use stepper_synth_backend::effects::Effect;
-    use synth_backend::SynthEffectState;
-
-    let (sender, receiver) = tokio::sync::mpsc::channel(1);
-
-    let mut send_state = {
-        let synth = synth.clone();
-        let mut last_state = Vec::new();
-
-        async move || {
-            let state = {
-                let mut synth = synth.lock().unwrap();
-
-                SynthEffectState {
-                    effect: synth.effect_type,
-                    effect_on: synth.effect_power,
-                    params: synth.get_effect().get_params(),
-                }
-            };
-
-            if let Ok(msg) = bincode::serialize(&state) {
-                if last_state == msg {
-                    return true;
-                }
-                last_state = msg.clone();
-
-                let msg = sse::Data::new(BASE64_STANDARD_NO_PAD.encode(&msg));
-
-                if sender.try_send(msg.into()).is_err() {
-                    println!("client disconnected; could not send SSE message");
-                    false
-                } else {
-                    true
-                }
-            } else {
-                true
-            }
-        }
-    };
-
-    send_state().await;
-
-    actix_web::rt::spawn(async move {
-        loop {
-            actix_web::rt::time::sleep(Duration::from_millis(1000)).await;
-
-            let keep_going = send_state().await;
-
-            if !keep_going {
-                println!("stopping sse");
-                break;
-            }
-        }
-
-        println!("done");
-    });
-
-    sse::Sse::from_infallible_receiver(receiver) // .with_keep_alive(Duration::from_secs(1))
-}
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("/synth-state/effect")]
+// pub async fn synth_effect_state(
+//     synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+// ) -> impl actix_web::Responder {
+//     use actix_web_lab::sse;
+//     use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
+//     use std::time::Duration;
+//     use stepper_synth_backend::effects::Effect;
+//     use synth_backend::SynthEffectState;
+//
+//     let (sender, receiver) = tokio::sync::mpsc::channel(1);
+//
+//     let mut send_state = {
+//         let synth = synth.clone();
+//         let mut last_state = Vec::new();
+//
+//         async move || {
+//             let state = {
+//                 let mut synth = synth.lock().unwrap();
+//
+//                 SynthEffectState {
+//                     effect: synth.effect_type,
+//                     effect_on: synth.effect_power,
+//                     params: synth.get_effect().get_params(),
+//                 }
+//             };
+//
+//             if let Ok(msg) = bincode::serialize(&state) {
+//                 if last_state == msg {
+//                     return true;
+//                 }
+//                 last_state = msg.clone();
+//
+//                 let msg = sse::Data::new(BASE64_STANDARD_NO_PAD.encode(&msg));
+//
+//                 if sender.try_send(msg.into()).is_err() {
+//                     println!("client disconnected; could not send SSE message");
+//                     false
+//                 } else {
+//                     true
+//                 }
+//             } else {
+//                 true
+//             }
+//         }
+//     };
+//
+//     send_state().await;
+//
+//     actix_web::rt::spawn(async move {
+//         loop {
+//             actix_web::rt::time::sleep(Duration::from_millis(1000)).await;
+//
+//             let keep_going = send_state().await;
+//
+//             if !keep_going {
+//                 println!("stopping sse");
+//                 break;
+//             }
+//         }
+//
+//         println!("done");
+//     });
+//
+//     sse::Sse::from_infallible_receiver(receiver) // .with_keep_alive(Duration::from_secs(1))
+// }
 
 // #[cfg(not(any(feature = "ssr", feature = "csr")))]
 // pub fn main() {

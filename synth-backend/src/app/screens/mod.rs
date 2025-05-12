@@ -9,10 +9,10 @@ use stepper_synth_backend::{
 };
 
 pub mod channel_editor;
-pub mod organ;
-pub mod reverb;
-pub mod sub_synth;
-pub mod wurlitzer;
+// pub mod organ;
+// pub mod reverb;
+// pub mod sub_synth;
+// pub mod wurlitzer;
 
 struct SynthScreen;
 
@@ -32,11 +32,12 @@ impl ApiPage for SynthScreen {
         view! {
             { move ||
                 match synth_state().engine {
-                    SynthEngineType::B3Organ => view! { <organ::OrganDisplay get_state=synth_state/> }.into_any(),
-                    SynthEngineType::SubSynth => view! { <sub_synth::SubSynthDisplay get_state=synth_state/> }.into_any(),
-                    SynthEngineType::Wurlitzer => view! { <wurlitzer::WurlitzerDisplay get_state=synth_state/> }.into_any(),
-                    SynthEngineType::WaveTable => view! { <div> "TODO" </div> }.into_any(),
-                    SynthEngineType::MidiOut => view! { <div> "TODO" </div> }.into_any(),
+                    // SynthEngineType::B3Organ => view! { <organ::OrganDisplay get_state=synth_state/> }.into_any(),
+                    // SynthEngineType::SubSynth => view! { <sub_synth::SubSynthDisplay get_state=synth_state/> }.into_any(),
+                    // SynthEngineType::Wurlitzer => view! { <wurlitzer::WurlitzerDisplay get_state=synth_state/> }.into_any(),
+                    // SynthEngineType::WaveTable => view! { <div> "TODO" </div> }.into_any(),
+                    // SynthEngineType::MidiOut => view! { <div> "TODO" </div> }.into_any(),
+                    _ => view! { <div> "TODO" </div> }.into_any(),
                 }
             }
         }
@@ -61,8 +62,9 @@ impl ApiPage for EffectScreen {
         view! {
             { move ||
                 match synth_state().effect {
-                    EffectType::Reverb => view! { <reverb::ReverbDisplay get_state=synth_state/> }.into_any(),
-                    EffectType::Chorus => view! { <UnderConstruction/> }.into_any(),
+                    // EffectType::Reverb => view! { <reverb::ReverbDisplay get_state=synth_state/> }.into_any(),
+                    // EffectType::Chorus => view! { <UnderConstruction/> }.into_any(),
+                    _ => view! { <UnderConstruction/> }.into_any(),
                 }
             }
         }

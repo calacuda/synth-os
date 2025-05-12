@@ -61,7 +61,7 @@ pub async fn run_midi(
             // let updated = updated.clone();
             // let effect = effect_midi.clone();
             let seq = seq.clone();
-            let wurli = wurli.clone();
+            // let wurli = wurli.clone();
             // let name = port_name.clone();
 
             registered_ports.insert(
@@ -71,23 +71,26 @@ pub async fn run_midi(
                     "midir-read-input",
                     move |_stamp, msg, _| {
                         let message = MidiMessage::from(msg);
-                        let wurli_focused =
-                            synth.lock().unwrap().engine_type == SynthEngineType::Wurlitzer;
+                        // let wurli_focused =
+                        //     synth.lock().unwrap().engine_type == SynthEngineType::Wurlitzer;
 
-                        match message {
-                            MidiMessage::NoteOn(channel, _)
-                            | MidiMessage::NoteOff(channel, _)
-                            | MidiMessage::PitchBend(channel, _, _)
-                            | MidiMessage::ControlChange(channel, _)
-                                if channel == WURLITZER_CHANNEL || wurli_focused =>
-                            {
-                                // println!("sending midi message {message:?} on port {name}");
-                                _ = wurli.lock().unwrap().send(msg);
-                            }
-                            _ => {
-                                synth.lock().unwrap().midi_input(&message);
-                            }
-                        }
+                        // match message {
+                        //     MidiMessage::NoteOn(channel, _)
+                        //     | MidiMessage::NoteOff(channel, _)
+                        //     | MidiMessage::PitchBend(channel, _, _)
+                        //     | MidiMessage::ControlChange(channel, _)
+                        //         // if channel == WURLITZER_CHANNEL || wurli_focused
+                        //         =>
+                        //     {
+                        //         // println!("sending midi message {message:?} on port {name}");
+                        //         _ = wurli.lock().unwrap().send(msg);
+                        //     }
+                        //     _ => {
+                        //         synth.lock().unwrap().midi_input(&message);
+                        //     }
+                        // }
+
+                        synth.lock().unwrap().midi_input(&message);
 
                         let mut seq = seq.lock().unwrap();
 
