@@ -19,3 +19,6 @@ _new-tmux:
 tmux:
   tmux has-session -t synth-os-back || just _new-tmux
   tmux a -t synth-os-back
+
+watch:
+  cargo leptos watch -P --hot-reload --js-minify true

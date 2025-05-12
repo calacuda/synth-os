@@ -36,6 +36,7 @@ impl ApiPage for SynthScreen {
                     SynthEngineType::SubSynth => view! { <sub_synth::SubSynthDisplay get_state=synth_state/> }.into_any(),
                     SynthEngineType::Wurlitzer => view! { <wurlitzer::WurlitzerDisplay get_state=synth_state/> }.into_any(),
                     SynthEngineType::WaveTable => view! { <div> "TODO" </div> }.into_any(),
+                    SynthEngineType::MidiOut => view! { <div> "TODO" </div> }.into_any(),
                 }
             }
         }

@@ -16,7 +16,7 @@ leptos_meta = { version = "0.7.8" }
 leptos_actix = { version = "0.7.8", optional = true }
 leptos_router = { version = "0.7.8", features = ["nightly"] }
 wasm-bindgen = "0.2"
-stepper-synth-backend = { package = "stepper-synth" , git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, optional = true }
+stepper-synth-backend = { package = "stepper-synth" , git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, optional = true, features = [ "midir", "tinyaudio", "fern" ] }
 # leptos_server_signal = "0.8.0"
 actix-ws = { version = "0.2", optional = true }
 leptos_sse = "0.4.0"

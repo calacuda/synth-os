@@ -2,7 +2,7 @@ use leptos::{prelude::*, task::spawn_local};
 use stepper_synth_backend::pygame_coms::{Knob, SynthEngineState};
 
 #[component]
-pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
+pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState + 'static) -> impl IntoView {
     let db_vals = [
         Knob::One,
         Knob::Two,
@@ -21,9 +21,7 @@ pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
 
     let send_db = move |db: usize, set_to: f32| {
         spawn_local(async move {
-            let send = move || { 
-                set_organ_draw_bars((db,set_to))
-            };
+            let send = move || set_organ_draw_bars((db, set_to));
 
             for _ in 0..8 {
                 if send().await.is_ok() {
@@ -63,9 +61,7 @@ pub fn OrganDisplay(get_state: impl Fn() -> SynthEngineState) -> impl IntoView {
 }
 
 #[leptos::server]
-pub async fn set_organ_draw_bars(
-    data: (usize, f32),
-) -> Result<(), leptos::prelude::ServerFnError> {
+pub async fn set_organ_draw_bars(data: (usize, f32)) -> Result<(), leptos::prelude::ServerFnError> {
     use std::ops::IndexMut;
     use stepper_synth_backend::{
         pygame_coms::SynthEngineType, synth_engines::SynthModule, KnobCtrl,
@@ -79,7 +75,7 @@ pub async fn set_organ_draw_bars(
 
     if to > 1.0 {
         return Err(ServerFnError::new(
-            "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less."
+            "can only set draw_bars to numbers between 0.0 and 1.0. no greater, no less.",
         ));
     }
 
