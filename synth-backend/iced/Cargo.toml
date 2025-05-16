@@ -1,0 +1,27 @@
+[package]
+name = "synth-backend"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+actix-files = { version = "0.6" }
+actix-web = { version = "4", features = ["macros"] }
+stepper-synth-backend = { package = "stepper-synth" , git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, optional = true, features = [ "midir", "tinyaudio", "fern" ] }
+actix-ws = "0.3"
+actix-web-lab = "0.24.1"
+tokio = "1.45.0"
+bincode = { version = "2.0.1", features = ["serde"] }
+base64 = "0.22.1"
+codee = "0.3.0"
+reqwest = "0.12.15"
+midir = "0.10.1"
+midi-control = "0.2.2"
+tinyaudio = "1.1.0"
+anyhow = "1.0.98"
+log = { version = "0.4.27", features = ["max_level_info", "release_max_level_info"] }
+serde = { version = "1.0.219", features = ["derive"] }
+iced = { version = "0.13.1", features = ["tokio"] }
+
