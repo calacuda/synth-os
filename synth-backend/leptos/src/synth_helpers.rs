@@ -1,16 +1,14 @@
-// use actix_web::rt::spawn;
-use anyhow::{bail, Result};
+use anyhow::Result;
 use log::*;
-use midi_control::{Channel, MidiMessage};
-use midir::{os::unix::VirtualOutput, Ignore, MidiInput, MidiOutput, PortInfoError};
+use midi_control::MidiMessage;
+use midir::{Ignore, MidiInput, PortInfoError};
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc, Mutex,
 };
-use stepper_synth_backend::{pygame_coms::SynthEngineType, MidiControlled};
-use stepper_synth_backend::{sequencer::SequencerIntake, synth_engines::Synth, HashMap};
-
-const WURLITZER_CHANNEL: Channel = Channel::Ch3;
+use stepper_synth_backend::{
+    sequencer::SequencerIntake, synth_engines::Synth, HashMap, MidiControlled,
+};
 
 pub async fn run_midi(
     seq: actix_web::web::Data<Mutex<SequencerIntake>>,
@@ -20,12 +18,12 @@ pub async fn run_midi(
     // effect_midi: Arc<AtomicBool>,
 ) -> Result<()> {
     let mut registered_ports = HashMap::default();
-    let midi_out = MidiOutput::new("VirtualOutput")?;
-    let wurli_port_name = "wurlitzer";
-    let Ok(wurlitzer) = midi_out.create_virtual(wurli_port_name) else {
-        bail!("failed to create a virtual midi port for the wurlitzer")
-    };
-    let wurli = Arc::new(Mutex::new(wurlitzer));
+    // let midi_out = MidiOutput::new("VirtualOutput")?;
+    // let wurli_port_name = "wurlitzer";
+    // let Ok(wurlitzer) = midi_out.create_virtual(wurli_port_name) else {
+    //     bail!("failed to create a virtual midi port for the wurlitzer")
+    // };
+    // let wurli = Arc::new(Mutex::new(wurlitzer));
     // let mut wurli = midi_out.connect(&out_port, )?;
 
     while !exit.load(Ordering::Relaxed) {

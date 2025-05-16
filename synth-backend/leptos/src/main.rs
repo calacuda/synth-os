@@ -1,6 +1,4 @@
 #![feature(impl_trait_in_bindings)]
-use leptos::prelude::{server, ServerFnError};
-use leptos_actix::extract;
 
 #[cfg(feature = "ssr")]
 mod consts {
@@ -95,6 +93,7 @@ async fn main() -> std::io::Result<()> {
             .service(Files::new("/assets", &site_root))
             // serve the favicon from /favicon.ico
             .service(favicon)
+            // .service(tailwind_config)
             // .service(synth_state)
             // .service(synth_engine_state)
             // .service(synth_effect_state)
@@ -119,7 +118,7 @@ async fn main() -> std::io::Result<()> {
                                 <HydrationScripts options=leptos_options.clone()/>
                                 <MetaTags/>
                             </head>
-                            <body>
+                            <body class="bg-ctp-base">
                                 <App/>
                             </body>
                         </html>
@@ -143,13 +142,33 @@ async fn main() -> std::io::Result<()> {
 async fn favicon(
     leptos_options: actix_web::web::Data<leptos::config::LeptosOptions>,
 ) -> actix_web::Result<actix_files::NamedFile> {
+    use log::info;
+
     let leptos_options = leptos_options.into_inner();
     let site_root = &leptos_options.site_root;
+    info!("{site_root}/favicon.ico");
+
     Ok(actix_files::NamedFile::open(format!(
         "{site_root}/favicon.ico"
     ))?)
 }
+
+// #[cfg(feature = "ssr")]
+// #[actix_web::get("")]
+// async fn tailwind_config(
+//     leptos_options: actix_web::web::Data<leptos::config::LeptosOptions>,
+// ) -> actix_web::Result<actix_files::NamedFile> {
+//     use log::info;
 //
+//     let leptos_options = leptos_options.into_inner();
+//     let site_root = &leptos_options.site_root;
+//     info!("{site_root}/favicon.ico");
+//
+//     Ok(actix_files::NamedFile::open(format!(
+//         "{site_root}/tailwind.config.js"
+//     ))?)
+// }
+
 // #[cfg(feature = "ssr")]
 // #[actix_web::get("/synth-state/engine/set/{engine}")]
 // pub async fn set_synth_engine(

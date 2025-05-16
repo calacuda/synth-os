@@ -1,4 +1,4 @@
-provides the message bus, controls the synth, and handles sequencer input.
+provides the control API, controls the synth, handles midi input, and serves the front end gui.
 
 ## Endpoints
 
@@ -9,3 +9,14 @@ provides the message bus, controls the synth, and handles sequencer input.
 - qtile-intake
 - sequencer-intake
 - vital-midi-device
+
+## Sidebar Tabs
+
+- midi-stepper
+- midi-sequencer
+- channel-editor
+- channel-A
+- channel-B
+- channel-C
+- channel-D
+- settings
