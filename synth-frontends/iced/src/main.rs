@@ -46,7 +46,7 @@ impl App {
     }
 
     fn view(&self) -> Row<Screen> {
-        row![]
+        row!["foobar"]
     }
 }
 
