@@ -1,0 +1,18 @@
+_:
+  @just -l
+
+_new-window NAME CMD:
+  tmux new-w -t synth-os-front -n "{{NAME}}"
+  tmux send-keys -t synth-os-front:"{{NAME}}" "{{CMD}}" ENTER
+
+_new-tmux:
+  tmux new -ds synth-os-front -n "README"
+  tmux send-keys -t synth-os-front:README 'nv ./README.md "+set wrap"' ENTER
+  @just _new-window "Edit" ""
+  @just _new-window "Run" ""
+  @just _new-window "Git" "git status"
+  @just _new-window "Misc" ""
+
+tmux:
+  tmux has-session -t synth-os-front || just _new-tmux
+  tmux a -t synth-os-front

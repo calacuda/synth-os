@@ -1,0 +1,11 @@
+[package]
+name = "synth-os"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+iced = { version = "0.13.1", features = ["tokio"] }
+tokio = { version = "1.45.0", features = ["full"] }
+stepper-synth-backend = { package = "stepper-synth" , git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, optional = true, features = [ "midir", "tinyaudio", "fern" ] }
+tracing = { version = "0.1.41", features = ["async-await", "log"] }
+tracing-subscriber = { version = "0.3.19", features = ["tracing"] }
