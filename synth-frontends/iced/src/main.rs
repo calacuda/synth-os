@@ -2,11 +2,17 @@ use iced::{
     Task, Theme,
     widget::{Row, row},
 };
+use sidebar::side_bar;
+use strum::{Display, EnumIter, EnumString};
+use tracing::debug;
 
-#[derive(Debug, Clone, Copy, Default)]
+pub mod sidebar;
+
+#[derive(Debug, Clone, Copy, Default, EnumIter, EnumString, Display)]
 pub enum Screen {
+    // #[default]
+    // Loading,
     #[default]
-    Loading,
     MidiStepper,
     MidiSequenser,
     ChannelEditor,
@@ -15,6 +21,12 @@ pub enum Screen {
     ChannelC,
     ChannelD,
     Settings,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Message {
+    /// changes wht screen the UI is set to.
+    ScreenChange(Screen),
 }
 
 pub struct App {
@@ -41,12 +53,19 @@ impl App {
         // )
     }
 
-    fn update(&mut self, message: Screen) -> Task<Screen> {
+    fn update(&mut self, message: Message) -> Task<Message> {
+        match message {
+            Message::ScreenChange(screen) => {
+                debug!("screen set to {screen}");
+                self.screen = screen
+            }
+        }
+
         Task::none()
     }
 
-    fn view(&self) -> Row<Screen> {
-        row!["foobar"]
+    fn view(&self) -> Row<Message> {
+        row![side_bar(self.screen)]
     }
 }
 
