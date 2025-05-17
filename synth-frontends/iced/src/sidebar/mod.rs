@@ -5,21 +5,23 @@ use iced::{
 };
 
 pub fn side_bar<'a>(screen: Screen) -> Column<'a, Message> {
+    let b_size = 75;
+
     let button = |label| {
         button(text(label).align_x(Center))
-            .padding(10)
-            .width(80)
-            .height(80)
+            .padding(20)
+            .width(b_size)
+            .height(b_size)
     };
 
     column![
-        button("Midi Step"),
-        button("Midi Seq"),
-        button("Channels"),
-        button("Channel A"),
-        button("Channel B"),
-        button("Channel C"),
-        button("Channel D"),
-        button("Settings"),
+        button("Step."),
+        button("Seq."),
+        button("Chan"),
+        button("A"),
+        button("B"),
+        button("C"),
+        button("D"),
+        button("Set."),
     ]
 }
