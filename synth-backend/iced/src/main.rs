@@ -96,6 +96,16 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
+#[actix_web::get("/stepper/")]
+pub async fn stepper_screen(
+    synth: actix_web::web::Data<std::sync::Mutex<stepper_synth_backend::synth_engines::Synth>>,
+    engine: actix_web::web::Path<stepper_synth_backend::pygame_coms::SynthEngineType>,
+) -> impl actix_web::Responder {
+    
+
+    String::new()
+}
+
 // #[cfg(feature = "ssr")]
 // #[actix_web::get("/synth-state/engine/set/{engine}")]
 // pub async fn set_synth_engine(

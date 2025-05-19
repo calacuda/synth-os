@@ -6,7 +6,12 @@ edition = "2024"
 [dependencies]
 iced = { version = "0.13.1", features = ["tokio"] }
 tokio = { version = "1.45.0", features = ["full"] }
-stepper-synth-backend = { package = "stepper-synth" , git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, optional = true, features = [ "midir", "tinyaudio", "fern" ] }
+stepper_synth = {package = "stepper-synth", git = "https://github.com/calacuda/stepper-synth", branch = "feature", version = "0.1.0", default-features = false, features = [ "midir", "tinyaudio", "fern" ] }
 tracing = { version = "0.1.41", features = ["async-await", "log"] }
 tracing-subscriber = { version = "0.3.19", features = ["tracing"] }
 strum = { version = "0.27.1", features = ["derive", "strum_macros"] }
+tinyaudio = "1.1.0"
+anyhow = "1.0.98"
+midir = "0.10.1"
+midi-control = { version = "0.2.2", default-features = false }
+derive_more = { version = "2.0.1", features = ["add", "as_ref", "deref", "deref_mut"] }
